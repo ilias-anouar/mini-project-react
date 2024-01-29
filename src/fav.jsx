@@ -5,12 +5,16 @@ const Fav = (data) => {
     const [state, setState] = useState(d.state)
     // eslint-disable-next-line no-unused-vars
     const [id, setId] = useState(d.id)
-
-    console.log(id);
     const handelClick = () => {
         if (state) {
             setState(false)
         } else {
+            fetch(`http://127.0.0.1:3000/favorite/${id}`, { method: 'POST' })
+                .then(res => {
+                    return res.text()
+                }).then(data => {
+                    console.log(data);
+                })
             setState(true)
         }
     }

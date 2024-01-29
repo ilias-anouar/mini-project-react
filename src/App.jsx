@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Nav from './nav';
 import './App.css';
 import Card from './side';
@@ -8,9 +9,14 @@ import { useEffect, useState } from 'react';
 
 function App() {
   // const cards = []
+  const [page, setPage] = useState('home/random')
   const [meals, setMeals] = useState([])
   const [url, setUrl] = useState(`https://www.themealdb.com/api/json/v1/1/random.php`)
 
+
+  if (page == 'home/random') {
+    console.log('we are home at random meals');
+  }
 
   useEffect(() => {
     fetchUsers(url);
@@ -19,22 +25,35 @@ function App() {
 
   async function fetchUsers(url) {
     const temp = []
+
+
+    let fav = await fetch('http://127.0.0.1:3000/favorite/').then(res => {
+      return res.text()
+    }).then(data =>
+      data.split('\n')
+    )
     if (url.indexOf('random') > -1) {
       for (let i = 0; i < 6; i++) {
         const response = await fetch(url)
           .then((res) => res.json())
           .then((user) => user)
-        temp.push({ "id": response.meals[0].idMeal, "name": response.meals[0].strMeal, "image": response.meals[0].strMealThumb, "state": false })
+        if (fav.includes(response.meals[0].idMeal)) {
+          temp.push({ "id": response.meals[0].idMeal, "name": response.meals[0].strMeal, "image": response.meals[0].strMealThumb, "state": true })
+        } else {
+          temp.push({ "id": response.meals[0].idMeal, "name": response.meals[0].strMeal, "image": response.meals[0].strMealThumb, "state": false })
+        }
       }
       setMeals(temp);
     } else {
       const response = await fetch(url)
         .then((res) => res.json())
         .then((user) => user)
-      console.log(response);
       response.meals.forEach(response => {
-        console.log('i will be in the for each');
-        temp.push({ "id": response.idMeal, "name": response.strMeal, "image": response.strMealThumb, "state": false })
+        if (fav.includes(response.idMeal)) {
+          temp.push({ "id": response.idMeal, "name": response.strMeal, "image": response.strMealThumb, "state": true })
+        } else {
+          temp.push({ "id": response.idMeal, "name": response.strMeal, "image": response.strMealThumb, "state": false })
+        }
       });
       setMeals(temp);
     }
@@ -43,7 +62,6 @@ function App() {
   const clickHandler = () => {
     setMeals([])
     let value = document.getElementById('search').value
-    console.log(value);
     setUrl(`https://www.themealdb.com/api/json/v1/1/search.php?s=${value}`)
     fetchUsers(url);
   }
