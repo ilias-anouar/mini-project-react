@@ -32,9 +32,25 @@ function App() {
     }).then(data =>
       data.split('\n')
     )
+
     if (url.indexOf('random') > -1) {
       for (let i = 0; i < 6; i++) {
         const response = await fetch(url)
+          .then((res) => res.json())
+          .then((user) => user)
+        if (fav.includes(response.meals[0].idMeal)) {
+          temp.push({ "id": response.meals[0].idMeal, "name": response.meals[0].strMeal, "image": response.meals[0].strMealThumb, "state": true })
+        } else {
+          temp.push({ "id": response.meals[0].idMeal, "name": response.meals[0].strMeal, "image": response.meals[0].strMealThumb, "state": false })
+        }
+      }
+      setMeals(temp);
+    } else if (url.indexOf('lookup')) {
+      for (let i = 0; i < fav.length; i++) {
+        if (fav[i] == "") {
+          break
+        }
+        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${fav[i]}`)
           .then((res) => res.json())
           .then((user) => user)
         if (fav.includes(response.meals[0].idMeal)) {
@@ -66,10 +82,16 @@ function App() {
     fetchUsers(url);
   }
 
+  const handelFav = () => {
+    setMeals([])
+    setUrl(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=`)
+    fetchUsers(url);
+  }
+
   if (meals.length === 0) {
     return (
       <div className="App">
-        <Nav b={{ handler: clickHandler }}></Nav>
+        <Nav b={{ handler: clickHandler, handleFav: handelFav }}></Nav>
         <div className='container mt-5'>
           <h2>6 Random meals for you :</h2>
           <div className="row">
@@ -83,7 +105,7 @@ function App() {
 
   return (
     <div className="App">
-      <Nav b={{ handler: clickHandler }}></Nav>
+      <Nav b={{ handler: clickHandler, handelFav: handelFav }}></Nav>
       <div className='container mt-5'>
         <h2>6 Random meals for you :</h2>
         <div className="row">

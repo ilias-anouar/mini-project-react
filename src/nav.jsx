@@ -13,7 +13,7 @@ const Nav = (data) => {
                             <a className="nav-link active" aria-current="page" href="./">Random</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link active" aria-current="page" href="./favorite">Favorite</a>
+                            <button className="nav-link active" aria-current="page" href="./favorite" onClick={b.handelFav}>Favorite</button>
                         </li>
                         {/* <li className="nav-item">
                             <p className="nav-link" href="#">Link</p>
